@@ -50,13 +50,36 @@ const addBookHandler = (request, h) => {
 };
 
 const getAllBooksHandler = (request, h) => {
+    const { name, reading, finished } = request.query;
+
+    let filteredBooks = [...books];
+
+    if (name) {
+        filteredBooks = filteredBooks.filter((book) =>
+            book.name.toLowerCase().includes(name.toLowerCase())
+        );
+    }
+
+    if (reading !== undefined) {
+        filteredBooks = filteredBooks.filter((book) =>
+            book.reading === Boolean(Number(reading))
+        );
+    }
+
+    if (finished !== undefined) {
+        filteredBooks = filteredBooks.filter((book) =>
+            book.finished === Boolean(Number(finished))
+        );
+    }
+
     return h.response({
         status: 'success',
         data: {
-            books: books.map(({ id, name, publisher }) => ({ id, name, publisher })),
+            books: filteredBooks.map(({ id, name, publisher }) => ({ id, name, publisher })),
         },
     }).code(200);
 };
+
 
 const getBookByIdHandler = (request, h) => {
     const { bookId } = request.params;
